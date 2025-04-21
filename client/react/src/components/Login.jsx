@@ -13,6 +13,11 @@ const Login = () => {
     try {
         const res = await api.post('/login', { email, password });
       localStorage.setItem('accessToken', res.data.accessToken);
+      localStorage.setItem('offlineSession', JSON.stringify({
+        trustedTimestamp: res.data.serverTimestamp
+      }));
+      console.log
+
       setMsg('Login successful');
       navigate('/'); // redirect after login
     } catch (err) {
