@@ -5,6 +5,7 @@ import { checkSession } from '../utils/session';
 import { verifySessionIntegrity } from '../utils/verifySession';
 
 const PrivateRoute = ({ children }) => {
+
   const [isValid, setIsValid] = useState(null);
 
   useEffect(() => {
@@ -19,8 +20,11 @@ const PrivateRoute = ({ children }) => {
       } else {
         setIsValid(true); // skip if offline
       }
+      
     };
     validate();
+
+    
   }, []);
 
   if (isValid === null) return <p>Loading...</p>;

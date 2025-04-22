@@ -11,6 +11,8 @@ export const verifySessionIntegrity = async () => {
       headers: { Authorization: `Bearer ${accessToken}` }
     });
 
+    console.log(res);
+
     const trustedFromServer = res.data.serverTimestamp;
     const trustedFromClient = session.trustedTimestamp;
 

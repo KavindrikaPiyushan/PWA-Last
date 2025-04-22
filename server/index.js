@@ -5,6 +5,8 @@ const mysql = require('mysql2/promise');
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 require('dotenv').config();
+const crypto = require('crypto');
+const { error } = require('console');
 
 const app = express();
 const PORT = 5000;
@@ -223,6 +225,12 @@ app.post('/refresh', (req, res) => {
   });
 });
 
+// get server current time 
+
+app.get('/server-time',verifyToken,(req,res)=>{
+   res.json({serverTime:Date.now()});
+})
+
 // Verify Session
 
 app.get('/verify-session',verifyToken,async(req,res)=>{
@@ -359,6 +367,64 @@ app.delete('/users/:id', verifyToken, async (req, res) => {
     });
   }
 });
+
+
+// Subscription
+
+// licence key generator
+function generateLicenseKey(){
+  return crypto.randomBytes(16).toString('hex').toUpperCase();
+}
+
+app.post('/api/admin/create-license',async(req,res)=>{
+  const {userId,plan} = req.body;
+  const licenseKey = generateLicenseKey();
+
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setDate(startDate.getDate()+30);
+
+  try{
+    await db.query(
+      'INSERT INTO subscriptions (user_id,license_key,plan,start_date,end_date,is_active) VALUES (?,?,?,?,?,?)',
+      [userId,licenseKey,plan,startDate,endDate,true]
+    );
+    res.json({succcess:true,licenseKey});
+  }catch(err){
+    console.error(err);
+    res.status(500).json({succcess:false,error:'Database error'});
+  }
+});
+
+
+// Validate license Key
+app.post('/api/validate-license',async(req,res)=>{
+  const {licenseKey} = req.body;
+  const [rows] = await db.query('SELECT * FROM subscriptions WHERE license_key = ?',[licenseKey]);
+  const sub = rows[0];
+
+  if(!sub || !sub.is_active || new Date(sub.end_date)<new Date()){
+    return res.status(403).json({valid:false});
+  }
+
+  await db.query('UPDATE subscriptions SET last_verified = NOW() WHERE license_key = ?',[licenseKey]);
+
+  res.json({
+    valid: true,
+    plan:sub.plan,
+    expires:sub.end_date,
+  });
+
+
+});
+
+
+
+
+
+
+
+
 
 // Server Start
 app.listen(PORT, () => {

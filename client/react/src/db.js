@@ -41,3 +41,5 @@ export const clearSyncItem = async (id) => {
   const db = await initDB();
   await db.delete('syncQueue', id);
 };
+
+
