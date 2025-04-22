@@ -45,7 +45,7 @@ export const checkSession =async () => {
     const serverTime = dayjs(res.data.serverTime);
     const diffWithServer = serverTime.diff(lastLoginServerTime,'minute');
 
-    if(diffWithServer>=1){
+    if(diffWithServer>=5){
       localStorage.removeItem('accessToken');
       localStorage.removeItem('offlineSession');
       alert('Login time validation failed. Please log in again.');

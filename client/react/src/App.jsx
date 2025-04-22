@@ -3,8 +3,10 @@ import { BrowserRouter as Router, Routes, Route, Navigate  } from 'react-router-
 import UserManager from './UserManager';
 import Login from './components/Login';
 import PrivateRoute from './routes/PrivateRoute';
-// import SessionWatcher from './utils/sessionWatcher';
+import SubscriptionRoute from './routes/SubscriptionRoute';
 import EnterSubscription from './components/EnterSubscription';
+import PremiumFeatures from './components/PremiumFeatures';
+
 
 
 
@@ -15,6 +17,16 @@ const App = () => {
       
       <Routes>
         <Route path="/subscription" element={<EnterSubscription/>}/>
+        <Route
+          path="/premium"
+          element={
+            <PrivateRoute>
+              <SubscriptionRoute>
+                <PremiumFeatures />
+              </SubscriptionRoute>
+            </PrivateRoute>
+          }
+        />
         <Route path='/login' element={<Login/>} />
         <Route path="/" element={<PrivateRoute><UserManager /> </PrivateRoute>} />
      

@@ -15,7 +15,7 @@ export default function EnterSubscription() {
 
     try {
       await activateLicense(licenseKey);
-      navigate('/'); // Redirect to the main app if the license is activated successfully
+      navigate('/premium'); // Redirect to the main app if the license is activated successfully
     } catch (err) {
       setError('License is invalid or expired');
       console.log(err);

@@ -17,7 +17,7 @@ export async function checkSubscription() {
   
     // If it's been 7 days and online, revalidate the subscription
     if (days >= 7 && navigator.onLine) {
-      const res = await fetch('http://localhost:3001/api/validate-license', {
+      const res = await fetch('http://localhost:5000/api/validate-license', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ licenseKey: sub.license_key })
@@ -32,6 +32,8 @@ export async function checkSubscription() {
       // Update subscription data in IndexedDB
       await saveSub({ ...sub, expires: result.expires, last_verified: now.toISOString() });
     }
+
+    console.log("subscription status..",true)
   
     return true; // Subscription is valid
   }
