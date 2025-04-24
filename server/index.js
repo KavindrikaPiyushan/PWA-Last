@@ -382,7 +382,7 @@ app.post('/api/admin/create-license',async(req,res)=>{
 
   const startDate = new Date();
   const endDate = new Date();
-  endDate.setDate(startDate.getDate()+30);
+  endDate.setMinutes(startDate.getMinutes()+1);
 
   try{
     await db.query(

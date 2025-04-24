@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { saveUsers, getUsers, addToSyncQueue } from './db';
 import { syncWithServer } from './sync';
+import { secureGet } from './utils/secureStorage';
+import { Link } from 'react-router-dom';
 
 const API_URL = 'http://localhost:5000/users';
 
@@ -22,7 +24,7 @@ const UserManager = () => {
   }, []);
 
   const fetchUsers = async () => { 
-    const token = localStorage.getItem('accessToken');
+    const token = secureGet('accessToken');
     if (!token) return console.log('No access token found');
   
     if (navigator.onLine) {
@@ -134,6 +136,8 @@ const UserManager = () => {
           </li>
         ))}
       </ul>
+
+      <Link to='/premium'>Go to premium Features</Link>
     </div>
   );
 };

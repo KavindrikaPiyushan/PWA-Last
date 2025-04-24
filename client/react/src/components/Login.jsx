@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import api from '../api/axios';
+import { secureSet } from '../utils/secureStorage';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -12,8 +13,8 @@ const Login = () => {
     e.preventDefault();
     try {
         const res = await api.post('/login', { email, password });
-      localStorage.setItem('accessToken', res.data.accessToken);
-      localStorage.setItem('offlineSession', JSON.stringify({
+        secureSet('accessToken', res.data.accessToken);
+        secureSet('offlineSession', JSON.stringify({
         trustedTimestamp: res.data.serverTimestamp
       }));
       console.log

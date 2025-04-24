@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { secureSet,secureGet } from '../utils/secureStorage';
 
 const api = axios.create({
   baseURL: 'http://localhost:5000',
@@ -8,7 +9,7 @@ const api = axios.create({
 // 👉 Add access token to every request
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('accessToken');
+    const token = secureGet('accessToken');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -30,7 +31,7 @@ api.interceptors.response.use(
         const refreshRes = await api.post('/refresh');
         const { accessToken } = refreshRes.data;
 
-        localStorage.setItem('accessToken', accessToken);
+        secureSet('accessToken', accessToken);
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
 
         return api(originalRequest);

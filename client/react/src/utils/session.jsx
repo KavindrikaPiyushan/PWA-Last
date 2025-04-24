@@ -1,10 +1,11 @@
 // utils/session.js
 import dayjs from 'dayjs';
-import api from '../api/axios'
+import api from '../api/axios';
+import { secureGet,secureRemove } from '../utils/secureStorage';
 
 export const checkSession =async () => {
-  const session = JSON.parse(localStorage.getItem('offlineSession'));
-  const accessToken = localStorage.getItem('accessToken');
+  const session = JSON.parse(secureGet('offlineSession'));
+  const accessToken = secureGet('accessToken');
 
   if (!session || !accessToken) return false;
 
@@ -14,16 +15,16 @@ export const checkSession =async () => {
 
   //  This will check system current time is less than last login time, if it is lpgout automatically
   if(now.isBefore(loginTime)){
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('offlineSession');
+    secureRemove('accessToken');
+    secureRemove('offlineSession');
     alert('System time manupulation detected. Please login in again');
   }
 
 
 // This check the difference between last login time and current systemn time. if it is more than 1 minute will logout automatically.
   if (diffMinutes >= 5) {
-    localStorage.removeItem('accessToken');
-    localStorage.removeItem('offlineSession');
+    secureRemove('accessToken');
+    secureRemove('offlineSession');
     alert('Session expired. Please log in again.');
     return false;
   }
@@ -46,8 +47,8 @@ export const checkSession =async () => {
     const diffWithServer = serverTime.diff(lastLoginServerTime,'minute');
 
     if(diffWithServer>=5){
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('offlineSession');
+      secureRemove('accessToken');
+      secureRemove('offlineSession');
       alert('Login time validation failed. Please log in again.');
 
       return false;

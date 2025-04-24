@@ -1,4 +1,5 @@
 import { openDB } from 'idb';
+import { encryptData, decryptData } from './utils/cryptoUtils'; // Shared utility
 
 export const initDB = async () => {
   return openDB('crud-db', 1, {
@@ -13,33 +14,42 @@ export const initDB = async () => {
   });
 };
 
+// Encrypt and save users
 export const saveUsers = async (users) => {
   const db = await initDB();
   const tx = db.transaction('users', 'readwrite');
   for (const user of users) {
-    await tx.store.put(user);
+    const encrypted = encryptData(user);
+    await tx.store.put({ id: user.id, encrypted }); // Store under same ID
   }
   await tx.done;
 };
 
+// Decrypt all users
 export const getUsers = async () => {
   const db = await initDB();
-  return db.getAll('users');
+  const entries = await db.getAll('users');
+  return entries.map(entry => decryptData(entry.encrypted)).filter(Boolean);
 };
 
+// Add to syncQueue encrypted
 export const addToSyncQueue = async (action, payload) => {
   const db = await initDB();
-  await db.add('syncQueue', { action, payload });
+  const encrypted = encryptData({ action, payload });
+  await db.add('syncQueue', { encrypted });
 };
 
+// Decrypt sync queue items
 export const getSyncQueue = async () => {
   const db = await initDB();
-  return db.getAll('syncQueue');
+  const records = await db.getAll('syncQueue');
+  return records.map(r => ({
+    ...r,
+    ...(decryptData(r.encrypted) || {})
+  })).filter(r => r.action); // filter invalid or tampered records
 };
 
 export const clearSyncItem = async (id) => {
   const db = await initDB();
   await db.delete('syncQueue', id);
 };
-
-

@@ -16,7 +16,7 @@ const App = () => {
     <Router>
       
       <Routes>
-        <Route path="/subscription" element={<EnterSubscription/>}/>
+        <Route path="/subscription" element={<PrivateRoute> <EnterSubscription/></PrivateRoute>}/>
         <Route
           path="/premium"
           element={

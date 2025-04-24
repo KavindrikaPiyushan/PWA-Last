@@ -1,9 +1,10 @@
 // utils/verifySession.js
 import api from '../api/axios';
+import { secureGet,secureRemove } from '../utils/secureStorage';
 
 export const verifySessionIntegrity = async () => {
-  const session = JSON.parse(localStorage.getItem('offlineSession'));
-  const accessToken = localStorage.getItem('accessToken');
+  const session = JSON.parse(secureGet('offlineSession'));
+  const accessToken = secureGet('accessToken');
   if (!session || !accessToken) return false;
 
   try {
@@ -21,8 +22,8 @@ export const verifySessionIntegrity = async () => {
 
     if (diff > toleranceMs) {
       alert('Session mismatch detected. Please log in again.');
-      localStorage.removeItem('accessToken');
-      localStorage.removeItem('offlineSession');
+      secureRemove('accessToken');
+      secureRemove('offlineSession');
       return false;
     }
 
